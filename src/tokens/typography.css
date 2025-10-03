@@ -1,0 +1,35 @@
+
+:root {
+  /* Headings */
+  --font-heading-1-size: 48px;
+  --font-heading-2-size: 32px;
+  --font-heading-3-size: 24px;
+  --font-heading-4-size: 20px;
+  --font-heading-5-size: 18px;
+
+  /* Body Text */
+  --font-body-xl-size: 18px;
+  --font-body-lg-size: 16px;
+  --font-body-md-size: 14px;
+  --font-body-sm-size: 12px;
+  --font-body-xs-size: 10px;
+
+  /* Button Text */
+  --font-button-lg-size: 16px;
+  --font-button-md-size: 14px;
+  --font-button-sm-size: 12px;
+
+  /* Font Weights */
+  --font-weight-semi-bold: 600;
+  --font-weight-medium: 500;
+  --font-weight-regular: 400;
+  --font-weight-light: 300;
+
+  /* Font Family */
+  --font-family-primary: 'Poppins', sans-serif;
+}
+
+/* Optional: Apply global font family */
+* {
+  font-family: var(--font-family-primary);
+}

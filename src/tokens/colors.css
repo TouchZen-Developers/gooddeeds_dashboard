@@ -1,0 +1,40 @@
+:root {
+  /* Primary Palette - Orange Gradient */
+  --color-orange-600: #F8551F;
+  --color-orange-500: #FA8E6A;
+  --color-orange-400: #FCAA8F;
+  --color-orange-300: #FDC6B4;
+  --color-orange-200: #FEE3DA;
+  --color-white: #FFFFFF;
+
+  /* Secondary Palette - Purple Gradient */
+  --color-purple-600: #705AFF;
+  --color-purple-500: #A091FF;
+  --color-purple-400: #B7ADFF;
+  --color-purple-300: #CFC8FF;
+  --color-purple-200: #E7E3FF;
+  
+  /* Greyscale Palette */
+  --color-gray-100: #0E0A24;
+  --color-gray-90: #18142D;
+  --color-gray-80: #484559;
+  --color-gray-70: #6A6777;
+  --color-gray-60: #7D7B89;
+  --color-gray-50: #A3A2AC;
+  --color-gray-40: #C5C4CA;
+  --color-gray-30: #E2E2E5;
+  --color-gray-20: #EEEEF0;
+  --color-gray-10: #F5F5F6;
+
+  /* Others */
+  --color-red: #EB5757;
+  --color-orange: #F2994A;
+  --color-yellow: #F2C94C;
+  --color-green-1: #219653;
+  --color-green-2: #27AE60;
+  --color-blue-1: #2F80ED;
+  --color-blue-2: #2D9CDB;
+  --color-blue-3: #56CCF2;
+  --color-purple-1: #9B51E0;
+  --color-purple-2: #BB6BD9;
+}
