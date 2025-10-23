@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
@@ -45,13 +45,11 @@ const LoginPage = () => {
       // Use our API client for login
       const response = await authApi.login({
         email: values.email,
-        password: values.password,
-        device_name: "admin"
+        password: values.password
       })
-
-      if (response?.token) {
-        setToken(response.token)
-        localStorage.setItem('user', JSON.stringify(response.user))
+      if (response?.data.token) {
+        setToken(response.data.token)
+        localStorage.setItem('user', JSON.stringify(response.data.user))
         toast.success('Login successful!')
         router.push('/dashboard/families')
       } else {
@@ -70,6 +68,13 @@ const LoginPage = () => {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      router.push('/dashboard/families')
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-buffer-50 flex flex-col bg-gray-10">

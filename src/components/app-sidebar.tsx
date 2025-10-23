@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <a
           className="cursor-pointer"
-          onSelect={() => {
+          onClick={() => {
             try {
               removeToken()
             } catch { }

@@ -12,19 +12,24 @@ import { SearchInput } from '@/components/search-input'
 import { DataTable } from "@/components/data-table"
 import { z } from "zod"
 import { ColumnDef } from "@tanstack/react-table"
-import { useAllCategories } from '@/hooks/use-categories'
+import { useAllBeneficiaries } from '@/hooks/use-beneficiaries'
 import { Download } from "lucide-react";
 import Button from "@/components/Button/Button";
 
-type TabType = 'approved' | 'request' | 'rejected';
+type TabType = 'approved' | 'pending' | 'rejected';
 const schema = z.object({
-  id: z.number(),
-  name: z.string(),
-  subtitle: z.string(),
-  photo_url: z.string(),
-  is_active: z.boolean(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  affected_event: z.string(),
+  family_size: z.number(),
+  state: z.string(),
+  city: z.string(),
+  user: z.object({
+    id: z.number(),
+    first_name: z.string(),
+    last_name: z.string(),
+    email: z.string(),
+    phone_number: z.string(),
+    photo_url: z.string(),
+  }),
 })
 export default function Page() {
   const { title } = usePageTitle();
@@ -32,11 +37,10 @@ export default function Page() {
   const [activeTab, setActiveTab] = useState<TabType>('approved');
   const [searchKey, setSearchKey] = useState(0)
   const [searchQuery, setSearchQuery] = useState<string>("")
-  const { data: categoriesData, isLoading } = useAllCategories(searchQuery);
-
-  // Memoize the search handler to prevent unnecessary re-renders
+  const { data: approvedBeneficiariesData } = useAllBeneficiaries('approved');
+  const { data: rejectedBeneficiariesData } = useAllBeneficiaries('rejected');
+  const { data: beneficiariesData, isLoading } = useAllBeneficiaries(activeTab);
   const handleSearch = useCallback((query: string) => {
-    console.log('Searching for:', query)
     setSearchQuery(query)
   }, [])
 
@@ -49,50 +53,49 @@ export default function Page() {
   // Define columns specific to claims page
   const columns: ColumnDef<z.infer<typeof schema>>[] = useMemo(() => [
     {
-      accessorKey: "name",
+      accessorKey: "last_name",
       header: "Last Name",
       cell: ({ row }) => {
-        return (<>{row.original.name}</>)
+        return (<>{row.original.user.last_name}</>)
       },
       enableHiding: false,
     },
     {
-      accessorKey: "subtitle",
+      accessorKey: "first_name",
       header: () => "First Name",
       cell: ({ row }) => (
-
-        <>{row.original.name}</>
+        <>{row.original.user.first_name}</>
       ),
     },
     {
-      accessorKey: "name",
+      accessorKey: "email",
       header: "Email",
       cell: ({ row }) => {
-        return (<>{row.original.name}</>)
+        return (<>{row.original.user.email}</>)
       },
       enableHiding: false,
     },
     {
-      accessorKey: "name",
+      accessorKey: "city",
       header: "City",
       cell: ({ row }) => {
-        return (<>{row.original.name}</>)
+        return (<>{row.original.city}</>)
       },
       enableHiding: false,
     },
     {
-      accessorKey: "name",
+      accessorKey: "state",
       header: "State",
       cell: ({ row }) => {
-        return (<>{row.original.name}</>)
+        return (<>{row.original.state}</>)
       },
       enableHiding: false,
     },
     {
-      accessorKey: "name",
+      accessorKey: "family_size",
       header: "Family Size",
       cell: ({ row }) => {
-        return (<>{row.original.name}</>)
+        return (<>{row.original.family_size}</>)
       },
       enableHiding: false,
     },
@@ -100,8 +103,7 @@ export default function Page() {
       accessorKey: "is_active",
       header: () => "Recent Events",
       cell: ({ row }) => (
-
-        <>{row.original.is_active === true ? '✅' : '❌'}</>
+        <>{row.original.affected_event}</>
       ),
     },
   ], [])
@@ -109,7 +111,7 @@ export default function Page() {
 
   const exportUsers = () => {
     // Get the current data from the table
-    const dataToExport = categoriesData?.data?.data || [];
+    const dataToExport = beneficiariesData?.data?.data || [];
 
     if (dataToExport.length === 0) {
       console.log("No data to export");
@@ -124,13 +126,13 @@ export default function Page() {
       headers.join(","),
       ...dataToExport.map((row) => {
         return [
-          `"${row.name || ''}"`,
-          `"${row.name || ''}"`,
-          `"${row.name || ''}"`,
-          `"${row.name || ''}"`,
-          `"${row.name || ''}"`,
-          `"${row.name || ''}"`,
-          row.is_active ? 'Active' : 'Inactive'
+          `"${row.user.last_name || ''}"`,
+          `"${row.user.first_name || ''}"`,
+          `"${row.user.email || ''}"`,
+          `"${row.city || ''}"`,
+          `"${row.state || ''}"`,
+          `"${row.family_size || ''}"`,
+          `"${row.affected_event || ''}"`,
         ].join(",");
       })
     ].join("\n");
@@ -152,12 +154,12 @@ export default function Page() {
 
 
   return (
-    <div className="flex flex-col gap-[10px]">
+    <div className="flex flex-col ">
       <h1 className="text-2xl font-semibold mb-5">{title}</h1>
-      <div className="grid grid-cols-1 gap-[10px] *:data-[slot=card]:bg-gradient-to-t @xl/main:grid-cols-2">
-        <Card className="@container/card !shadow-none bg-white border-2 border-buffer-200 p-4">
+      <div className="grid grid-cols-1 gap-5 *:data-[slot=card]:bg-gradient-to-t @xl/main:grid-cols-2 mb-8">
+        <Card className="@container/card !shadow-none bg-white border-0 p-[30px]">
           <CardDescription>
-            <div className="flex items-center gap-2 justify-between text-gray-900 ">
+            <div className="flex items-center gap-[30px] text-gray-900 ">
               <div className="w-18 h-18 flex items-center justify-center rounded-full bg-blue-1/10">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
                   <path d="M19.1661 20.8958C19.1661 19.1412 17.7437 17.7188 15.989 17.7188C14.2344 17.7188 12.812 19.1412 12.8119 20.8958C12.8119 22.6505 14.2344 24.0729 15.989 24.0729C17.7437 24.0729 19.1661 22.6505 19.1661 20.8958ZM21.8328 20.8958C21.8328 24.1233 19.2165 26.7396 15.989 26.7396C12.7616 26.7396 10.1453 24.1233 10.1453 20.8958C10.1453 17.6684 12.7616 15.0521 15.989 15.0521C19.2164 15.0521 21.8327 17.6684 21.8328 20.8958Z" fill="#2F80ED" />
@@ -169,19 +171,19 @@ export default function Page() {
                 </svg>
               </div>
               <div>
-                <div className="flex items-center gap-2 justify-between text-gray-900">
+                <div className=" text-gray-100">
                   Approved Families
                 </div>
                 <CardTitle className="text-2xl font-semibold tabular-nums text-primary-buffer">
-                  353
+                  {approvedBeneficiariesData?.data.total}
                 </CardTitle>
               </div>
             </div>
           </CardDescription>
 
         </Card>
-        <Card className="@container/card !shadow-none bg-white border-2 border-buffer-200 p-4">
-          <div className="flex items-center gap-2 justify-between text-gray-900 ">
+        <Card className="@container/card !shadow-none bg-white border-0 p-[30px]">
+          <div className="flex items-center gap-[30px] text-gray-900 ">
             <div className="w-18 h-18 flex items-center justify-center rounded-full bg-red/10">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M19.1661 20.8958C19.1661 19.1412 17.7437 17.7188 15.989 17.7188C14.2344 17.7188 12.812 19.1412 12.8119 20.8958C12.8119 22.6505 14.2344 24.0729 15.989 24.0729C17.7437 24.0729 19.1661 22.6505 19.1661 20.8958ZM21.8328 20.8958C21.8328 24.1233 19.2165 26.7396 15.989 26.7396C12.7616 26.7396 10.1453 24.1233 10.1453 20.8958C10.1453 17.6684 12.7616 15.0521 15.989 15.0521C19.2164 15.0521 21.8327 17.6684 21.8328 20.8958Z" fill="#EB5757" />
@@ -193,17 +195,16 @@ export default function Page() {
               </svg>
             </div>
             <div>
-              <div className="flex items-center gap-2 justify-between text-gray-900">
+              <div className=" text-gray-900">
                 Rejected Families
               </div>
               <CardTitle className="text-2xl font-semibold tabular-nums text-primary-buffer">
-                24
+                {rejectedBeneficiariesData?.data.total}
               </CardTitle>
             </div>
           </div>
         </Card>
       </div>
-
       <div>
         <div className="tabs">
           <div
@@ -219,15 +220,15 @@ export default function Page() {
             </svg>
           </div>
           <div
-            className={`tab-item ${activeTab === 'request' ? 'active' : ''}`}
-            onClick={() => setActiveTab('request')}
+            className={`tab-item ${activeTab === 'pending' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending')}
             style={{ cursor: 'pointer' }}
           >
             <span>
               Request
             </span>
             <svg xmlns="http://www.w3.org/2000/svg" width="181" height="42" viewBox="0 0 181 42" fill="none">
-              <path d="M0 12C0 5.37258 5.37258 0 12 0H162.299C167.957 0 172.847 3.9528 174.033 9.48565L181 42H0V12Z" fill={activeTab === 'request' ? '#fff' : '#EEEEF0'} />
+              <path d="M0 12C0 5.37258 5.37258 0 12 0H162.299C167.957 0 172.847 3.9528 174.033 9.48565L181 42H0V12Z" fill={activeTab === 'pending' ? '#fff' : '#EEEEF0'} />
             </svg>
           </div>
           <div
@@ -244,7 +245,7 @@ export default function Page() {
           </div>
         </div>
         {/* Tab Content */}
-        <div className="tab-content bg-white rounded-lg p-6">
+        <div className="tab-content bg-white rounded-lg !rounded-tl-none p-6 overflow-x-scroll">
           {activeTab === 'approved' && (
             <div>
               <div className="flex items-center justify-between gap-4 mb-6">
@@ -269,13 +270,13 @@ export default function Page() {
                   </Button>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="filled" size="md" iconLeft={<Download />} onClick={exportUsers}>
+                  <Button variant="filled" size="lg" iconLeft={<Download />} onClick={exportUsers}>
                     Export Users
                   </Button>
                 </div>
               </div>
               <DataTable
-                data={categoriesData?.data?.data || []}
+                data={beneficiariesData?.data?.data || []}
                 schema={schema}
                 isLoading={isLoading}
                 columns={columns as ColumnDef<unknown>[]}
@@ -283,11 +284,42 @@ export default function Page() {
               />
             </div>
           )}
-          {activeTab === 'request' && (
+          {activeTab === 'pending' && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
-              <p className="text-gray-600">List of pending family requests will be displayed here.</p>
-              {/* Add your pending requests data table or content here */}
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-4 w-full">
+                  <SearchInput
+                    key={searchKey}
+                    onSearch={handleSearch}
+                    placeholder="Search categories..."
+                    disabled={isLoading}
+                    isLoading={isLoading}
+                  />
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    onClick={() => {
+                      handleSearch("")
+                      setSearchKey(prev => prev + 1)
+                    }}
+                    disabled={isLoading}
+                  >
+                    Clear
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="filled" size="lg" iconLeft={<Download />} onClick={exportUsers}>
+                    Export Users
+                  </Button>
+                </div>
+              </div>
+              <DataTable
+                data={beneficiariesData?.data?.data || []}
+                schema={schema}
+                isLoading={isLoading}
+                columns={columns as ColumnDef<unknown>[]}
+                onRowClick={handleRowClick}
+              />
             </div>
           )}
           {activeTab === 'rejected' && (

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ShoppingBag, Utensils, GraduationCap, ChevronDown } from 'lucide-react';
 import Button from '@/components/Button/Button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,20 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useParams } from 'next/navigation';
+import { useBeneficiary } from '@/hooks/use-beneficiaries';
+import { useAllAffectedEvents } from '@/hooks/use-affected-events';
 export default function FamilyProfile() {
+  const params = useParams();  
+  const { data: beneficiariesData, isLoading } = useBeneficiary(params.id);
+  const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
+
+  const [beneficiary, setBeneficiary] = useState();
+  useEffect(() => {
+    if (beneficiariesData) {
+      setBeneficiary(beneficiariesData.data.beneficiary);
+    }
+  }, [beneficiariesData]);
   const [expandedList, setExpandedList] = useState('food');
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const foodItems = [
@@ -38,7 +51,7 @@ export default function FamilyProfile() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <g clip-path="url(#clip0_1171_10311)">
+          <g clipPath="url(#clip0_1171_10311)">
             <path d="M17.17 24C17.0384 24.0007 16.9079 23.9755 16.7861 23.9257C16.6642 23.876 16.5534 23.8027 16.46 23.71L8.28998 15.54C7.82435 15.0755 7.45492 14.5238 7.20286 13.9163C6.95079 13.3089 6.82104 12.6577 6.82104 12C6.82104 11.3423 6.95079 10.6911 7.20286 10.0837C7.45492 9.4762 7.82435 8.92445 8.28998 8.45999L16.46 0.290002C16.5532 0.196764 16.6639 0.122803 16.7857 0.0723425C16.9076 0.0218822 17.0381 -0.00408935 17.17 -0.00408936C17.3018 -0.00408936 17.4324 0.0218822 17.5542 0.0723425C17.6761 0.122803 17.7867 0.196764 17.88 0.290002C17.9732 0.38324 18.0472 0.49393 18.0976 0.615752C18.1481 0.737574 18.1741 0.868142 18.1741 1C18.1741 1.13186 18.1481 1.26243 18.0976 1.38425C18.0472 1.50607 17.9732 1.61676 17.88 1.71L9.70998 9.87999C9.14818 10.4425 8.83262 11.205 8.83262 12C8.83262 12.795 9.14818 13.5575 9.70998 14.12L17.88 22.29C17.9737 22.3829 18.0481 22.4935 18.0989 22.6154C18.1496 22.7373 18.1758 22.868 18.1758 23C18.1758 23.132 18.1496 23.2627 18.0989 23.3846C18.0481 23.5064 17.9737 23.617 17.88 23.71C17.7865 23.8027 17.6757 23.876 17.5539 23.9257C17.4321 23.9755 17.3016 24.0007 17.17 24Z" fill="#0E0A24" />
           </g>
           <defs>
@@ -59,14 +72,14 @@ export default function FamilyProfile() {
             <Label htmlFor="contactName" className="text-sm font-medium text-gray-700 mb-2 block">
               Contact Name
             </Label>
-            <Input id="contactName" defaultValue="Emily Smith" className="bg-gray-10" />
+            <Input id="contactName" defaultValue={beneficiary?.user?.first_name} className="bg-gray-10" />
           </div>
 
           <div>
             <Label htmlFor="contactEmail" className="text-sm font-medium text-gray-700 mb-2 block">
               Contact Email
             </Label>
-            <Input id="contactEmail" defaultValue="emily.smith@email.com" className="bg-gray-10" />
+            <Input id="contactEmail" defaultValue={beneficiary?.user?.email} className="bg-gray-10" />
           </div>
 
           <div>
@@ -80,49 +93,60 @@ export default function FamilyProfile() {
             <Label htmlFor="city" className="text-sm font-medium text-gray-700 mb-2 block">
               City
             </Label>
-            <Input id="city" defaultValue="Chicago" className="bg-gray-10" />
+            <Input id="city" defaultValue={beneficiary?.city} className="bg-gray-10" />
           </div>
 
           <div>
             <Label htmlFor="state" className="text-sm font-medium text-gray-700 mb-2 block">
               State
             </Label>
-            <Input id="state" defaultValue="Illinois" className="bg-gray-10" />
+            <Input id="state" defaultValue={beneficiary?.state} className="bg-gray-10" />
           </div>
 
           <div>
             <Label htmlFor="zipCode" className="text-sm font-medium text-gray-700 mb-2 block">
               Zip Code
             </Label>
-            <Input id="zipCode" defaultValue="60101" className="bg-gray-10" />
+            <Input id="zipCode" defaultValue={beneficiary?.zip_code} className="bg-gray-10" />
           </div>
 
           <div>
             <Label htmlFor="familySize" className="text-sm font-medium text-gray-700 mb-2 block">
               Family Size
             </Label>
-            <Input id="familySize" defaultValue="3" className="bg-gray-10" />
+            <Input id="familySize" defaultValue={beneficiary?.family_size} className="bg-gray-10" />
           </div>
 
           <div>
             <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700 mb-2 block">
               Phone Number
             </Label>
-            <Input id="phoneNumber" defaultValue="818-222-9191" className="bg-gray-10" />
+            <Input id="phoneNumber" defaultValue={beneficiary?.user?.phone_number} className="bg-gray-10" />
           </div>
 
           <div>
             <Label htmlFor="recentEvent" className="text-sm font-medium text-gray-700 mb-2 block">
               Recent Event
             </Label>
-            <Select defaultValue="california">
+            {String(affectedEventsData?.data?.data?.find(
+                  (event) => event.name === beneficiary?.affected_event
+                )?.id)}
+            <Select 
+              defaultValue={
+                affectedEventsData?.data?.data?.find(
+                  (event) => event.name === beneficiary?.affected_event
+                )?.id
+              }
+            >
               <SelectTrigger className="bg-gray-10 w-full">
-                <SelectValue />
+                <SelectValue placeholder="Select an event" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="california">California Wildfires</SelectItem>
-                <SelectItem value="hurricane">Hurricane</SelectItem>
-                <SelectItem value="flood">Flood</SelectItem>
+                {affectedEventsData?.data?.data?.map((event) => {
+                  return <SelectItem key={event.id} value={event.id.toString()}>
+                    {event.name}
+                  </SelectItem>
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -134,7 +158,7 @@ export default function FamilyProfile() {
           <div className="">
             <h2 className="text-xl font-semibold mb-6 text-gray-100">Family Photo</h2>
             <img
-              src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=400&h=300&fit=crop"
+              src={beneficiary?.family_photo_url}
               alt="Family"
               className="w-full h-64 object-cover rounded-lg"
             />
@@ -142,7 +166,7 @@ export default function FamilyProfile() {
 
           <div className="">
             <h2 className="text-xl font-semibold mb-6 text-gray-100">Statement</h2>
-            <Textarea defaultValue="As a family navigating through unforeseen challenges, we find ourselves in a position where school and emergency supplies have become essential for our well-being and the education of our children, creating a heartfelt wish for support and assistance during these trying times" className="bg-gray-10" />
+            <Textarea defaultValue={beneficiary?.statement} className="bg-gray-10" />
           </div>
         </div>
 

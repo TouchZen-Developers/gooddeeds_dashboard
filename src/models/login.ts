@@ -1,8 +1,9 @@
 export interface loginResponse {
-  token: string
-  user: User
+  data: {
+    token: string
+    user: User
+  }
 }
-
 export interface User {
   id: number
   name: string

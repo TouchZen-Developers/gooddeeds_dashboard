@@ -45,8 +45,7 @@ const ForgotPasswordPage = () => {
       // Use our API client for login
       const response = await authApi.login({
         email: values.email,
-        password: values.password,
-        device_name: "admin"
+        password: values.password
       })
 
       if (response?.token) {
