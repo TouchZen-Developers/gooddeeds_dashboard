@@ -76,10 +76,34 @@ export const beneficiariesApi = {
     return api.delete(`/claims/${id}`)
   },
 }
+
 export const affectedEventsApi = {
   getAffectedEvents: async () => {
     return api.get<BeneficiaryResponse>('/admin/affected-events')
   },
+  createAffectedEvent: async () => {
+    return api.post<BeneficiaryResponse>('/admin/affected-events')
+  },
 }
+
+export const categoriesApi = {
+  getCategories: async () => {
+    return api.get('/admin/categories')
+  },
+  createCategory: async (category: FormData) => {
+    return api.post('/admin/categories', category, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  updateCategory: async (id, category: FormData) => {
+    return api.put(`/admin/categories/${id}`, category, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  deleteCategory: async (id: number) => {
+    return api.delete(`/admin/categories/${id}`)
+  },
+}
+
 
 export default api

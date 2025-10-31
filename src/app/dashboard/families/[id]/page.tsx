@@ -60,7 +60,7 @@ export default function FamilyProfile() {
             </clipPath>
           </defs>
         </svg>
-        <h1 className="text-3xl font-bold text-gray-100">Smith Family</h1>
+        <h1 className="text-3xl font-bold text-gray-100">{beneficiary?.user?.last_name} Family</h1>
       </div>
 
       {/* Family Profile Section */}

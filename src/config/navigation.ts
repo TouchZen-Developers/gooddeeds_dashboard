@@ -27,26 +27,20 @@ export const navMain: NavMainItem[] = [
   {
     title: "Amazon Items",
     pageTitle: "Amazon Items",
-    url: "/dashboard/categories",
+    url: "/dashboard/items",
     icon: LayoutDashboard,
   },
   {
     title: "Amazon Categories",
     pageTitle: "Amazon Categories",
-    url: "/dashboard/products",
+    url: "/dashboard/categories",
     icon: Package,
   },
   {
     title: "Recent Events",
     pageTitle: "Recent Events",
-    url: "/dashboard/school-districts",
+    url: "/dashboard/recent-events",
     icon: School,
-  },
-  {
-    title: "School Products",
-    pageTitle: "School Products",
-    url: "/dashboard/school-products",
-    icon: Laptop,
   },
   {
     title: "Taxes & Fees",
