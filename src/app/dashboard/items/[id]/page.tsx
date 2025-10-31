@@ -65,7 +65,7 @@ export default function FamilyProfile() {
     }
 
     try {
-      if (!isNaN(id) && typeof id === 'number') {
+      if (typeof id === 'number') {
         categoryData.append('_method', 'PUT');
         await updateCategory.mutateAsync({ id: parseInt(id as string), category: categoryData });
         toast.success('Product updated');
@@ -105,9 +105,7 @@ export default function FamilyProfile() {
             </clipPath>
           </defs>
         </svg>
-        <h1 className="text-3xl font-bold text-gray-100">
-          {id ? "Edit category" : "Add category"}
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-100">Add Category</h1>
       </div>
 
       <div className="mb-6 bg-white p-10 rounded-xl">
@@ -163,7 +161,7 @@ export default function FamilyProfile() {
               Remove
             </Button>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={handleSave}>
-              {id ? "Update" : "Add"}
+              Update
             </Button>
           </div>
         </div>

@@ -95,13 +95,31 @@ export const categoriesApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-  updateCategory: async (id, category: FormData) => {
-    return api.put(`/admin/categories/${id}`, category, {
+  updateCategory: async (id: number, category: FormData) => {
+    return api.post(`/admin/categories/${id}`, category, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   deleteCategory: async (id: number) => {
     return api.delete(`/admin/categories/${id}`)
+  },
+}
+
+export const amazonItemsApi = {
+  getProducts: async () => {
+    return api.get('/admin/products')
+  },
+  createBulkProducts: async (product: FormData) => {
+    return api.post('/admin/products/bulk-import', product)
+  },
+  createProduct: async (category: FormData) => {
+    return api.post('/admin/products', category)
+  },
+  updateProduct: async (id: number, product: FormData) => {
+    return api.post(`/admin/products/${id}`, product)
+  },
+  deleteProduct: async (id: number) => {
+    return api.delete(`/admin/products/${id}`)
   },
 }
 
