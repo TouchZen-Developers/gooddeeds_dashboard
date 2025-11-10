@@ -42,23 +42,23 @@ const useUpdateCategory = () => {
   return updateCategoryMutation;
 };
 
-const useDeleteCategory = () => {
+const useDeleteItem = () => {
   const queryClient = useQueryClient();
-  const deleteCategoryMutation = useMutation({
+  const deleteItemMutation = useMutation({
     mutationFn: (id: number) => {
-      return categoriesApi.deleteCategory(id);
+      return amazonItemsApi.deleteProduct(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     }
   });
-  return deleteCategoryMutation;
+  return deleteItemMutation;
 };
 
 export {
   useAllItems,
   useCreateItem,
   // useUpdateCategory,
-  // useDeleteCategory
+  useDeleteItem
 };
 

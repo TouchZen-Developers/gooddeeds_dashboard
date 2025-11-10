@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateItem } from '@/hooks/use-items';
+import { useCreateItem, useDeleteItem } from '@/hooks/use-items';
 
 interface Category {
   id: number;
@@ -35,6 +35,7 @@ export default function AddItems() {
   const isEditing = !isNaN(id);
   const { data: categoriesData } = useAllCategories();
   const createItem = useCreateItem();
+  const deleteItem = useDeleteItem();
   const isLoading = createItem.isPending;
 
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -78,6 +79,17 @@ export default function AddItems() {
       router.push('/dashboard/items');
     } catch (error) {
       toast.error('Failed to add items');
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteItem.mutateAsync(id);
+      toast.success('Items deleted successfully');
+      router.push('/dashboard/items');
+    } catch (error) {
+      toast.error('Failed to delete items');
       console.error(error);
     }
   };
@@ -160,6 +172,13 @@ export default function AddItems() {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-4 mt-6">
+          <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+            onClick={handleDelete}
+            disabled={deleteItem.isPending}
+          >
+            {deleteItem.isPending ? 'Deleting...' : 'Delete'}
+          </Button>
           <Button
             className="bg-orange-500 hover:bg-orange-600 text-white px-8"
             onClick={handlePublish}
