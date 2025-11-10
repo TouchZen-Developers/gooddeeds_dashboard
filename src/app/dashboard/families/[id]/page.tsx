@@ -25,11 +25,11 @@ import { toast } from 'sonner';
 export default function FamilyProfile() {
   const router = useRouter()
   const params = useParams();
-  const { data: beneficiariesData, isLoading } = useBeneficiary(params.id);
+  const id = parseInt(params.id as string);
+  const { data: beneficiariesData, isLoading } = useBeneficiary(id);
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
   const approveBeneficiaryMutation = useApproveBeneficiary();
   const rejectBeneficiaryMutation = useRejectBeneficiary();
-
 
   const [beneficiary, setBeneficiary] = useState();
   useEffect(() => {

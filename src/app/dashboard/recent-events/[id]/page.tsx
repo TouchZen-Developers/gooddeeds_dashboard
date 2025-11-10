@@ -27,7 +27,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 export default function FamilyProfile() {
   const params = useParams();
-  const id = parseInt(params.id);
+  const id = parseInt(params.id as string);
   const router = useRouter();
   const [affectedEvent, setAffectedEvent] = useState({});
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
@@ -105,31 +105,6 @@ export default function FamilyProfile() {
     }
   }
 
-  // const handleEditRecord = async (record: z.infer<typeof schema> | FormData & { id?: number }) => {
-  //   console.log('Editing record:', record)
-  //   try {
-  //     if (record instanceof FormData) {
-  //       const idVal = editingRecord?.id;
-  //       if (typeof idVal === 'number') {
-  //         await updateCategory.mutateAsync({ id: idVal, params: record as unknown as CategoryItem })
-  //       }
-  //     } else {
-  //       const category: CategoryItem = {
-  //         "id": record.id,
-  //         "name": record.name,
-  //         "subtitle": record.subtitle,
-  //         "photo_url": record.photo_url,
-  //         "is_active": true,
-  //       }
-  //       await updateCategory.mutateAsync({ id: record.id, params: category })
-  //     }
-  //     toast.success('Category updated successfully')
-  //   } catch (error) {
-  //     console.error('Update category error:', error)
-  //     throw error
-  //   }
-  // }
-
   const handleRemove = async () => {
     // Implement removal logic here
     await deleteAffectedEventMutation.mutate(id);
@@ -140,7 +115,6 @@ export default function FamilyProfile() {
 
   return (
     <div className="">
-      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <g clipPath="url(#clip0_1171_10311)">
@@ -155,9 +129,7 @@ export default function FamilyProfile() {
         <h1 className="text-3xl font-bold text-gray-100"> {affectedEvent?.id ? 'Edit Event' : 'Add New Event'}</h1>
       </div>
 
-      {/* Family Profile Section */}
       <div className="mb-6 bg-white p-10 rounded-xl">
-
         <div className="grid grid-cols-2 gap-6 mb-10">
           <div className="">
             <Dropzone {...dropzone}>
@@ -248,7 +220,7 @@ export default function FamilyProfile() {
           </div>
         </div>
       </div>
-      {/* Remove Confirmation Dialog */}
+      
       <Dialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
         <DialogContent className="sm:max-w-sm">
           <div className="flex flex-col items-center text-center py-6">

@@ -1,4 +1,4 @@
-import { ContactRound, SquareRoundCorner, LayoutDashboard, Package, School, Laptop, Users, Coins } from "lucide-react"
+import { ContactRound, SquareRoundCorner, LayoutDashboard, Package, School, Users, Coins } from "lucide-react"
 
 export interface NavMainItem {
   title: string

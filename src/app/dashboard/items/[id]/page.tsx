@@ -31,7 +31,7 @@ interface CategoriesResponse {
 export default function AddItems() {
   const router = useRouter();
   const params = useParams();
-  const id = parseInt(params.id);
+  const id = parseInt(params.id as string);
   const isEditing = !isNaN(id);
   const { data: categoriesData } = useAllCategories();
   const createItem = useCreateItem();

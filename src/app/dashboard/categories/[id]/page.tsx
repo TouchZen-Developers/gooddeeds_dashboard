@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 export default function FamilyProfile() {
   const router = useRouter();
   const params = useParams();
-  const id = parseInt(params.id);
+  const id = parseInt(params.id as string);
   const icons = [
     { icon: '/open-book 2.png', id: 'heart' },
     { icon: '/bowl-food-solid-full 1.png', id: 'sandwich' },
@@ -37,17 +37,17 @@ export default function FamilyProfile() {
   const [category, setCategory] = useState({ name: '', id: 0, icon: '' });
   useEffect(() => {
     if (categoriesData) {
-      const categoryData = categoriesData?.data?.categories?.find((cat) => cat.id === parseInt(id as string));
+      const categoryData = categoriesData?.data?.categories?.find((cat) => cat.id === id);
       console.log('categoryData', categoryData);
-      setCategory({ name: categoryData?.name, id: categoryData?.id, icon: categoryData?.icon_url });
+      setCategory({ name: categoryData?.name || '', id: categoryData?.id || 0, icon: categoryData?.icon_url || '' });
     }
   }, [id, categoriesData]);
 
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
-  const [selectedIcon, setSelectedIcon] = useState(null);
+  const [selectedIcon, setSelectedIcon] = useState<{ icon: string; id: string } | null>(null);
   const [open, setOpen] = useState(false);
 
-  const handleIconSelect = (icon) => {
+  const handleIconSelect = (icon: { icon: string; id: string }) => {
     setSelectedIcon(icon);
     setOpen(false);
   };
@@ -66,7 +66,7 @@ export default function FamilyProfile() {
     try {
       if (!isNaN(id) && typeof id === 'number') {
         categoryData.append('_method', 'PUT');
-        await updateCategory.mutateAsync({ id: parseInt(id as string), category: categoryData });
+        await updateCategory.mutateAsync({ id: id, category: categoryData });
         toast.success('Product updated');
       } else {
         await createCategory.mutateAsync(categoryData)
@@ -80,7 +80,7 @@ export default function FamilyProfile() {
 
   const handleRemove = async () => {
     try {
-      await deleteCategory.mutateAsync(parseInt(id as string));
+      await deleteCategory.mutateAsync(id);
       setShowRemoveDialog(false);
       toast.success('Product removed');
       // navigate back to categories list or another appropriate page
@@ -120,7 +120,7 @@ export default function FamilyProfile() {
                 >
                   {(selectedIcon?.icon || category?.icon) ? (
                     <div className={`w-20 h-20 rounded-full flex items-center justify-center`}>
-                      <img src={selectedIcon?.icon || category?.icon} alt={selectedIcon?.id || category?.id} className="w-20 h-20" />
+                      <img src={selectedIcon?.icon || category?.icon} className="w-20 h-20" />
                     </div>
                   ) : (
                     <div className='flex flex-col items-center gap-1'>
@@ -136,7 +136,7 @@ export default function FamilyProfile() {
                     <button
                       key={icon.id}
                       onClick={() => handleIconSelect(icon)}
-                      className={`transition-all hover:scale-110 ${selectedIcon === icon.id ? 'ring-4 ring-orange-400 ring-offset-2' : ''
+                      className={`transition-all hover:scale-110 ${selectedIcon?.id === icon.id ? 'ring-4 ring-orange-400 ring-offset-2' : ''
                         }`}
                     >
                       <img src={icon.icon} alt={icon.id} className="w-12 h-12" />

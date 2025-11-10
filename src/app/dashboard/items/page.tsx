@@ -27,7 +27,7 @@ const schema = z.object({
 export default function Page() {
   const { title } = usePageTitle();
   const router = useRouter();
-  const { data: categoriesData, isLoading } = useAllItems();
+  const { data: itemsData, isLoading } = useAllItems();
 
   // Handle row click to navigate to detail page
   const handleRowClick = useCallback((row: unknown) => {
@@ -104,7 +104,7 @@ export default function Page() {
         <div className="tab-content bg-white rounded-lg !rounded-tl-none p-6 overflow-x-scroll">
           <div>
             <DataTable
-              data={(categoriesData as any)?.data?.data || []}
+              data={itemsData?.data?.data || []}
               schema={schema}
               isLoading={isLoading}
               columns={columns as ColumnDef<unknown>[]}

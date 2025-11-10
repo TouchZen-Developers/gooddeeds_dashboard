@@ -2,6 +2,8 @@ import { loginResponse } from '@/models/login'
 import apiClient, { AxiosResponse } from './api-client'
 import { AxiosRequestConfig } from 'axios'
 import { Beneficiary, BeneficiaryResponse } from '@/models/beneficiary'
+import { ProductsResponse } from '@/models/products'
+import { CategoriesResponse } from '@/models/category'
 
 // Generic API utility functions
 export const api = {
@@ -98,7 +100,7 @@ export const affectedEventsApi = {
 
 export const categoriesApi = {
   getCategories: async () => {
-    return api.get('/admin/categories')
+    return api.get<CategoriesResponse>('/admin/categories')
   },
   createCategory: async (category: FormData) => {
     return api.post('/admin/categories', category, {
@@ -117,7 +119,7 @@ export const categoriesApi = {
 
 export const amazonItemsApi = {
   getProducts: async () => {
-    return api.get('/admin/products')
+    return api.get<ProductsResponse>('/admin/products')
   },
   createBulkProducts: async (products: {
     category_id: number,
