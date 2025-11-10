@@ -12,7 +12,7 @@ import { SearchInput } from '@/components/search-input'
 import { DataTable } from "@/components/data-table"
 import { z } from "zod"
 import { ColumnDef } from "@tanstack/react-table"
-import { useAllBeneficiaries } from '@/hooks/use-beneficiaries'
+import { useAllBeneficiaries, useBeneficiariesStatistics } from '@/hooks/use-beneficiaries'
 import { Download } from "lucide-react";
 import Button from "@/components/Button/Button";
 
@@ -37,9 +37,8 @@ export default function Page() {
   const [activeTab, setActiveTab] = useState<TabType>('approved');
   const [searchKey, setSearchKey] = useState(0)
   const [searchQuery, setSearchQuery] = useState<string>("")
-  const { data: approvedBeneficiariesData } = useAllBeneficiaries('approved');
-  const { data: rejectedBeneficiariesData } = useAllBeneficiaries('rejected');
   const { data: beneficiariesData, isLoading } = useAllBeneficiaries(activeTab);
+  const { data: beneficiariesStatisticsData, isLoading: isStatisticsLoading } = useBeneficiariesStatistics();
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query)
   }, [])
@@ -175,7 +174,7 @@ export default function Page() {
                   Approved Families
                 </div>
                 <CardTitle className="text-2xl font-semibold tabular-nums text-primary-buffer">
-                  {approvedBeneficiariesData?.data.total}
+                  {beneficiariesStatisticsData?.data.approved}
                 </CardTitle>
               </div>
             </div>
@@ -199,7 +198,7 @@ export default function Page() {
                 Rejected Families
               </div>
               <CardTitle className="text-2xl font-semibold tabular-nums text-primary-buffer">
-                {rejectedBeneficiariesData?.data.total}
+                {beneficiariesStatisticsData?.data.rejected}
               </CardTitle>
             </div>
           </div>
@@ -253,7 +252,7 @@ export default function Page() {
                   <SearchInput
                     key={searchKey}
                     onSearch={handleSearch}
-                    placeholder="Search categories..."
+                    placeholder="Search by name or email..."
                     disabled={isLoading}
                     isLoading={isLoading}
                   />

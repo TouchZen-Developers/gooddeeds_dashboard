@@ -30,25 +30,29 @@ import {
   useDropzone,
 } from "@/components/ui/dropzone";
 import { useParams } from 'next/navigation';
-import { useBeneficiary } from '@/hooks/use-beneficiaries';
+import { useAllBeneficiaries, useBeneficiary } from '@/hooks/use-beneficiaries';
 import { useAllAffectedEvents } from '@/hooks/use-affected-events';
 import { Checkbox } from '@/components/ui/checkbox';
 export default function FamilyProfile() {
   const params = useParams();
   const [affectedEvent, setAffectedEvent] = useState({});
+  const { data: beneficiariesData, isLoading } = useAllBeneficiaries('');
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
   const id = params.id;
   const [beneficiary, setBeneficiary] = useState();
-   useEffect(() => {
-    if (affectedEventsData) {
-      setBeneficiary(beneficiariesData.data.beneficiary);
-    }
-  }, [id, affectedEventsData]);
+
+  //  useEffect(() => {
+  //   if (affectedEventsData) {
+  //     setBeneficiary(beneficiariesData.data.beneficiary);
+  //   }
+  // }, [id, affectedEventsData]);
+
   useEffect(() => {
     if (beneficiariesData) {
       setBeneficiary(beneficiariesData.data.beneficiary);
     }
   }, [beneficiariesData]);
+  
   const [expandedList, setExpandedList] = useState('food');
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const foodItems = [

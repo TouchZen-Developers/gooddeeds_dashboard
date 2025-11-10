@@ -18,13 +18,18 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useParams } from 'next/navigation';
-import { useBeneficiary } from '@/hooks/use-beneficiaries';
+import { useParams, useRouter } from 'next/navigation';
+import { useApproveBeneficiary, useBeneficiary, useRejectBeneficiary } from '@/hooks/use-beneficiaries';
 import { useAllAffectedEvents } from '@/hooks/use-affected-events';
+import { toast } from 'sonner';
 export default function FamilyProfile() {
-  const params = useParams();  
+  const router = useRouter()
+  const params = useParams();
   const { data: beneficiariesData, isLoading } = useBeneficiary(params.id);
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
+  const approveBeneficiaryMutation = useApproveBeneficiary();
+  const rejectBeneficiaryMutation = useRejectBeneficiary();
+
 
   const [beneficiary, setBeneficiary] = useState();
   useEffect(() => {
@@ -45,6 +50,13 @@ export default function FamilyProfile() {
   const toggleList = (listName) => {
     setExpandedList(expandedList === listName ? null : listName);
   };
+
+  const approve = async () => {
+    // Approve beneficiary logic here
+    await approveBeneficiaryMutation.mutate({ id: Number(params.id) });
+    toast.success('Beneficiary approved successfully');
+    router.push('/dashboard/families')
+  }
 
   return (
     <div className="">
@@ -72,7 +84,7 @@ export default function FamilyProfile() {
             <Label htmlFor="contactName" className="text-sm font-medium text-gray-700 mb-2 block">
               Contact Name
             </Label>
-            <Input id="contactName" defaultValue={beneficiary?.user?.first_name} className="bg-gray-10" />
+            <Input id="contactName" defaultValue={beneficiary?.user?.first_name + " " + beneficiary?.user?.last_name} className="bg-gray-10" />
           </div>
 
           <div>
@@ -129,9 +141,9 @@ export default function FamilyProfile() {
               Recent Event
             </Label>
             {String(affectedEventsData?.data?.data?.find(
-                  (event) => event.name === beneficiary?.affected_event
-                )?.id)}
-            <Select 
+              (event) => event.name === beneficiary?.affected_event
+            )?.id)}
+            <Select
               defaultValue={
                 affectedEventsData?.data?.data?.find(
                   (event) => event.name === beneficiary?.affected_event
@@ -286,10 +298,11 @@ export default function FamilyProfile() {
         <div className="flex justify-end gap-4 mt-6">
           <Button variant="outlined" className="text-red-600 border-red-200 hover:bg-red-50"
             onClick={() => setShowRemoveDialog(true)}>
-            Remove
+            Reject
           </Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-            Update
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={approve}
+          loading={approveBeneficiaryMutation.isLoading}>
+            Approve
           </Button>
         </div>
       </div>

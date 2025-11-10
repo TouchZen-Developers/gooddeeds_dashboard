@@ -14,6 +14,15 @@ const useAllBeneficiaries = (status?: string) => {
   });
 };
 
+const useBeneficiariesStatistics = () => {
+  return useQuery({
+    queryKey: ["beneficiaries", "statistics"],
+    queryFn: () => beneficiariesApi.getBeneficiariesStatistics(),
+    staleTime: 120000,
+    gcTime: 120000,
+  });
+};
+
 const useBeneficiary = (id: number) => {
   return useQuery({
     queryKey: ["beneficiary", id],
@@ -23,53 +32,42 @@ const useBeneficiary = (id: number) => {
   });
 };
 
-// const useCreateCategory = () => {
-//   const queryClient = useQueryClient();
+const useApproveBeneficiary = () => {
+  const queryClient = useQueryClient();
 
-//   const createCategoryMutation = useMutation({
-//     mutationFn: (params: CategoryItem) => {
-//       return categoriesApi.createCategory(params);
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["categories"] });
-//     }
-//   });
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id }: { id: number }) => {
+      return beneficiariesApi.approveBeneficiary(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["beneficiaries"] });
+    }
+  });
 
-//   return createCategoryMutation;
-// };
+  return updateCategoryMutation;
+};
 
-// const useUpdateCategory = () => {
-//   const queryClient = useQueryClient();
+const useRejectBeneficiary = () => {
+  const queryClient = useQueryClient();
 
-//   const updateCategoryMutation = useMutation({
-//     mutationFn: ({ id, params }: { id: number; params: CategoryItem }) => {
-//       return categoriesApi.updateCategory(id, params);
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["categories"] });
-//     }
-//   });
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: number) => {
+      return beneficiariesApi.rejectBeneficiary(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["beneficiaries"] });
+    }
+  });
 
-//   return updateCategoryMutation;
-// };
-// const useDeleteCategory = () => {
-//   const queryClient = useQueryClient();
-
-//   const deleteCategoryMutation = useMutation({
-//     mutationFn: (id: number) => {
-//       return categoriesApi.deleteCategory(id);
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["categories"] });
-//     }
-//   });
-
-//   return deleteCategoryMutation;
-// };
+  return deleteCategoryMutation;
+};
 
 
 export {
   useAllBeneficiaries,
-  useBeneficiary
+  useBeneficiary,
+  useBeneficiariesStatistics,
+  useApproveBeneficiary,
+  useRejectBeneficiary
 };
 

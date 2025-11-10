@@ -120,8 +120,8 @@ export default function FamilyProfile() {
                   className="w-28 h-28 rounded-full border-2 border-dashed border-orange-300 flex items-center justify-center bg-white hover:bg-gray-10 transition-colors"
                 >
                   {(selectedIcon?.icon || category?.icon) ? (
-                    <div className={`w-20 h-20 rounded-full flex items-center justify-center ${selectedIcon?.color }`}>
-                      <img src={selectedIcon?.icon || category?.icon} alt={selectedIcon?.id || category?.id} className="w-6 h-6" />
+                    <div className={`w-20 h-20 rounded-full flex items-center justify-center`}>
+                      <img src={selectedIcon?.icon || category?.icon} alt={selectedIcon?.id || category?.id} className="w-20 h-20" />
                     </div>
                   ) : (
                     <div className='flex flex-col items-center gap-1'>
@@ -137,10 +137,10 @@ export default function FamilyProfile() {
                     <button
                       key={icon.id}
                       onClick={() => handleIconSelect(icon)}
-                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 ${icon.color} ${selectedIcon === icon.id ? 'ring-4 ring-orange-400 ring-offset-2' : ''
+                      className={`transition-all hover:scale-110 ${selectedIcon === icon.id ? 'ring-4 ring-orange-400 ring-offset-2' : ''
                         }`}
                     >
-                      <img src={icon.icon} alt={icon.id} className="w-7 h-7" />
+                      <img src={icon.icon} alt={icon.id} className="w-12 h-12" />
                     </button>
                   ))}
                 </div>

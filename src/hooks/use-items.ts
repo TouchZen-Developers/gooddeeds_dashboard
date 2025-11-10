@@ -13,19 +13,19 @@ const useAllItems = () => {
     gcTime: 120000,
   });
 };
-const useCreateCategory = () => {
+const useCreateItem = () => {
   const queryClient = useQueryClient();
 
-  const createCategoryMutation = useMutation({
-    mutationFn: (params: FormData) => {
-      return categoriesApi.createCategory(params);
+  const createItemMutation = useMutation({
+    mutationFn: (params: any) => {
+      return amazonItemsApi.createBulkProducts(params);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     }
   });
 
-  return createCategoryMutation;
+  return createItemMutation;
 };
 
 const useUpdateCategory = () => {
@@ -57,7 +57,7 @@ const useDeleteCategory = () => {
 
 export {
   useAllItems,
-  // useCreateCategory,
+  useCreateItem,
   // useUpdateCategory,
   // useDeleteCategory
 };

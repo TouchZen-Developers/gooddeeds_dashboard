@@ -60,20 +60,20 @@ export const beneficiariesApi = {
     return api.get<BeneficiaryResponse>('/admin/beneficiaries', { params: { status } })
   },
 
+  getBeneficiariesStatistics: async () => {
+    return api.get<BeneficiaryResponse>('/admin/beneficiaries/statistics')
+  },
+
   getBeneficiary: async (id: number) => {
     return api.get<Beneficiary>(`/admin/beneficiaries/${id}`)
   },
 
-  createClaim: async (claimData: Record<string, unknown>) => {
-    return api.post('/claims', claimData)
+  approveBeneficiary: async (id: number) => {
+    return api.post(`/admin/beneficiaries/${id}/approve`)
   },
 
-  updateClaim: async (id: string, claimData: Record<string, unknown>) => {
-    return api.put(`/claims/${id}`, claimData)
-  },
-
-  deleteClaim: async (id: string) => {
-    return api.delete(`/claims/${id}`)
+  rejectBeneficiary: async (id: number) => {
+    return api.post(`/admin/beneficiaries/${id}/reject`)
   },
 }
 
@@ -109,11 +109,8 @@ export const amazonItemsApi = {
   getProducts: async () => {
     return api.get('/admin/products')
   },
-  createBulkProducts: async (product: FormData) => {
-    return api.post('/admin/products/bulk-import', product)
-  },
-  createProduct: async (category: FormData) => {
-    return api.post('/admin/products', category)
+  createBulkProducts: async (products: any) => {
+    return api.post('/admin/products/bulk-import', products)
   },
   updateProduct: async (id: number, product: FormData) => {
     return api.post(`/admin/products/${id}`, product)

@@ -1,93 +1,82 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@/components/Button/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Dialog, DialogContent, DialogDescription, DialogTitle,
-} from '@/components/ui/dialog';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
-import { useParams } from 'next/navigation';
-import { useAllCategories, useCreateCategory, useDeleteCategory, useUpdateCategory } from '@/hooks/use-categories';
-import { useRouter } from 'next/navigation'
-export default function FamilyProfile() {
+import { useAllCategories } from '@/hooks/use-categories';
+import { useRouter } from 'next/navigation';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useCreateItem } from '@/hooks/use-items';
+
+interface Category {
+  id: number;
+  name: string;
+  product_count: number;
+  icon_url?: string;
+}
+
+interface CategoriesResponse {
+  data: {
+    categories: Category[];
+  };
+}
+export default function AddItems() {
   const router = useRouter();
-  const params = useParams();
-  const id = parseInt(params.id);
-  const icons = [
-    { icon: '/open-book 2.png', color: 'bg-red/10', id: 'heart' },
-    { icon: '/bowl-food-solid-full 1.png', color: 'bg-blue-1/10', id: 'sandwich' },
-    { icon: '/Group.png', color: 'bg-green-100 text-green-500', id: 'book' },
-    { icon: '/map-solid-full 1.png', color: 'bg-purple-100 text-purple-500', id: 'map' },
-    { icon: '/carrot-solid-full 1.png', color: 'bg-orange-100 text-orange-500', id: 'rocket' },
-    { icon: '/toolbox-solid-full 1.png', color: 'bg-blue-2/10 text-cyan-500', id: 'car' },
-    { icon: '/hand-solid-full 1.png', color: 'bg-[#F2994A]/10', id: 'smile' },
-    { icon: '/face-laugh-solid-full 1.png', color: 'bg-purple-1/10', id: 'plane' },
-    { icon: '/helicopter-solid-full 1.png', color: 'bg-yellow/10', id: 'hand' },
-    { icon: '/bandage-solid-full 1.png', color: 'bg-blue-3/10', id: 'wallet' },
-    { icon: '/computer-solid-full 1.png', color: 'bg-purple-2/10', id: 'briefcase' },
-    { icon: '/apple-whole-solid-full 1.png', color: 'bg-red/10', id: 'apple' }
-  ];
-  const { data: categoriesData, isLoading: isLoadingEvents } = useAllCategories();
-  const deleteCategory = useDeleteCategory();
-  const createCategory = useCreateCategory();
-  const updateCategory = useUpdateCategory();
-  const [category, setCategory] = useState({ name: '', id: 0, icon: '' });
-  console.log('category', category);
-  useEffect(() => {
-    if (categoriesData) {
-      const categoryData = categoriesData?.data?.categories?.find((cat) => cat.id === parseInt(id as string));
-      console.log('categoryData', categoryData);
-      setCategory({ name: categoryData?.name, id: categoryData?.id, icon: categoryData?.icon_url });
-    }
-  }, [id, categoriesData]);
 
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
-  const [selectedIcon, setSelectedIcon] = useState(null);
-  const [open, setOpen] = useState(false);
+  const { data: categoriesData } = useAllCategories();
+  const createItem = useCreateItem();
+  const isLoading = createItem.isPending;
 
-  const handleIconSelect = (icon) => {
-    setSelectedIcon(icon);
-    setOpen(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [itemUrls, setItemUrls] = useState<string[]>(['']);
+
+  const handleAddItem = () => {
+    setItemUrls([...itemUrls, '']);
   };
 
-  const handleSave = async () => {
-    const categoryData = new FormData();
-    categoryData.append('name', category?.name);
+  const handleRemoveItem = (index: number) => {
+    const newUrls = itemUrls.filter((_, i) => i !== index);
+    setItemUrls(newUrls);
+  };
 
-    if (selectedIcon?.icon) {
-      const response = await fetch(selectedIcon.icon);
-      const blob = await response.blob();
-      const file = new File([blob], `icon-${selectedIcon.id}.png`, { type: 'image/png' });
-      categoryData.append('icon', file);
+  const handleUrlChange = (index: number, value: string) => {
+    const newUrls = [...itemUrls];
+    newUrls[index] = value;
+    setItemUrls(newUrls);
+  };
+
+  const handlePublish = async () => {
+    if (!selectedCategory) {
+      toast.error('Please select a category');
+      return;
+    }
+
+    const validUrls = itemUrls.filter(url => url.trim() !== '');
+    if (validUrls.length === 0) {
+      toast.error('Please add at least one item URL');
+      return;
     }
 
     try {
-      if (typeof id === 'number') {
-        categoryData.append('_method', 'PUT');
-        await updateCategory.mutateAsync({ id: parseInt(id as string), category: categoryData });
-        toast.success('Product updated');
-      } else {
-        await createCategory.mutateAsync(categoryData)
-        toast.success('Product added')
-      }
-      router.push('/dashboard/categories');
+      const data = {
+        category_id: selectedCategory,
+        urls: validUrls,
+      };
+      console.log('Submitting data:', data);
+      await createItem.mutateAsync(data);
+      toast.success('Items added successfully');
+      router.push('/dashboard/items');
     } catch (error) {
-      throw error
-    }
-  };
-
-  const handleRemove = async () => {
-    try {
-      await deleteCategory.mutateAsync(parseInt(id as string));
-      setShowRemoveDialog(false);
-      toast.success('Product removed');
-      // navigate back to categories list or another appropriate page
-      router.push('/dashboard/categories');
-    } catch (error) {
-      throw error;
+      toast.error('Failed to add items');
+      console.error(error);
     }
   };
 
@@ -105,97 +94,79 @@ export default function FamilyProfile() {
             </clipPath>
           </defs>
         </svg>
-        <h1 className="text-3xl font-bold text-gray-100">Add Category</h1>
+        <h1 className="text-3xl font-bold text-gray-100">Add Amazon Items</h1>
       </div>
 
       <div className="mb-6 bg-white p-10 rounded-xl">
-
-        <div className="flex items-start gap-8 mb-8">
-          <div className="flex flex-col items-center gap-2">
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  className="w-28 h-28 rounded-full border-2 border-dashed border-orange-300 flex items-center justify-center bg-white hover:bg-gray-10 transition-colors"
-                >
-                  {(selectedIcon?.icon || category?.icon) ? (
-                    <div className={`w-20 h-20 rounded-full flex items-center justify-center ${selectedIcon?.color }`}>
-                      <img src={selectedIcon?.icon || category?.icon} alt={selectedIcon?.id || category?.id} className="w-6 h-6" />
-                    </div>
-                  ) : (
-                    <div className='flex flex-col items-center gap-1'>
-                      <Plus className="text-orange-500" size={32} />
-                      <span className="text-sm text-orange-500 font-medium">Icon</span>
-                    </div>
-                  )}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-6" align="start" side='right'>
-                <div className="grid grid-cols-6 gap-4">
-                  {icons.map((icon) => (
-                    <button
-                      key={icon.id}
-                      onClick={() => handleIconSelect(icon)}
-                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all hover:scale-110 ${icon.color} ${selectedIcon === icon.id ? 'ring-4 ring-orange-400 ring-offset-2' : ''
-                        }`}
-                    >
-                      <img src={icon.icon} alt={icon.id} className="w-7 h-7" />
-                    </button>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+        {/* Category Dropdown */}
+        <div className="mb-8">
+          <Label htmlFor="category" className="text-sm font-medium text-gray-700 mb-2 block">
+            Category
+          </Label>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full h-12 ">
+              <SelectValue placeholder="Choose Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {(categoriesData as CategoriesResponse)?.data?.categories?.map((category: Category) => (
+                <SelectItem key={category.id} value={category.id.toString()}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <div className="mb-4">
-            <Label htmlFor="contactName" className="text-sm font-medium text-gray-700 mb-2 block">
-              Category name
-            </Label>
-            <Input id="contactName" defaultValue={category?.name} onChange={e => setCategory(prev => ({ ...prev, name: e.target.value }))} className="bg-gray-10" />
-          </div>
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4 mt-6">
-            <Button variant="outlined" className="text-red-600 border-red-200 hover:bg-red-50"
-              onClick={() => setShowRemoveDialog(true)}>
-              Remove
-            </Button>
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={handleSave}>
-              Update
-            </Button>
-          </div>
+        {/* Add Items Section */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Add Items</h2>
+
+          {itemUrls.map((url, index) => (
+            <div key={index} className="mb-4 flex items-center gap-2">
+              <div className="flex-1">
+                <Label htmlFor={`itemUrl-${index}`} className="text-sm font-medium text-gray-700 mb-2 block">
+                  Item URL
+                </Label>
+                <Input
+                  id={`itemUrl-${index}`}
+                  placeholder="Enter URL"
+                  value={url}
+                  onChange={(e) => handleUrlChange(index, e.target.value)}
+                  className=""
+                />
+              </div>
+              {itemUrls.length > 1 && (
+                <button
+                  onClick={() => handleRemoveItem(index)}
+                  className="mt-8 text-red-500 hover:text-red-700 transition-colors"
+                  aria-label="Remove item"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+          ))}
+
+          <Button
+            variant="outlined"
+            onClick={handleAddItem}
+            className="text-orange-500 border-orange-500 hover:bg-orange-50 mt-2"
+          >
+            Add Another Item
+          </Button>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-4 mt-6">
+          <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+            onClick={handlePublish}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Publishing...' : 'Publish'}
+          </Button>
         </div>
       </div>
-
-
-      {/* Remove Confirmation Dialog */}
-      <Dialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
-        <DialogContent className="sm:max-w-sm">
-          <div className="flex flex-col items-center text-center py-6">
-            <DialogTitle className="text-2xl font-semibold mb-2">
-              Are you sure?
-            </DialogTitle>
-            <DialogDescription className="text-gray-600 mb-6">
-              Are you sure you want to remove this category?
-            </DialogDescription>
-            <div className="flex gap-4 w-full">
-              <Button
-                variant="outlined"
-                className="flex-1 text-orange-500 border-orange-500 hover:bg-orange-50"
-                onClick={handleRemove}
-              >
-                Yes
-              </Button>
-              <Button
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
-                onClick={() => setShowRemoveDialog(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
