@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
 import { useAllCategories } from '@/hooks/use-categories';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -30,7 +30,9 @@ interface CategoriesResponse {
 }
 export default function AddItems() {
   const router = useRouter();
-
+  const params = useParams();
+  const id = parseInt(params.id);
+  const isEditing = !isNaN(id);
   const { data: categoriesData } = useAllCategories();
   const createItem = useCreateItem();
   const isLoading = createItem.isPending;
@@ -94,7 +96,7 @@ export default function AddItems() {
             </clipPath>
           </defs>
         </svg>
-        <h1 className="text-3xl font-bold text-gray-100">Add Amazon Items</h1>
+        <h1 className="text-3xl font-bold text-gray-100">{isEditing ? 'Edit Amazon Items' : 'Add Amazon Items'}</h1>
       </div>
 
       <div className="mb-6 bg-white p-10 rounded-xl">

@@ -297,11 +297,12 @@ export default function FamilyProfile() {
         {/* Action Buttons */}
         <div className="flex justify-end gap-4 mt-6">
           <Button variant="outlined" className="text-red-600 border-red-200 hover:bg-red-50"
+            loading={rejectBeneficiaryMutation.isPending}
             onClick={() => setShowRemoveDialog(true)}>
             Reject
           </Button>
           <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={approve}
-          loading={approveBeneficiaryMutation.isLoading}>
+            loading={approveBeneficiaryMutation.isPending}>
             Approve
           </Button>
         </div>
