@@ -15,9 +15,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { useAllBeneficiaries, useBeneficiariesStatistics } from '@/hooks/use-beneficiaries'
 import { Download } from "lucide-react";
 import Button from "@/components/Button/Button";
+import { id } from "date-fns/locale"
 
 type TabType = 'approved' | 'pending' | 'rejected';
 const schema = z.object({
+  id: z.number(),
   affected_event: z.string(),
   family_size: z.number(),
   state: z.string(),

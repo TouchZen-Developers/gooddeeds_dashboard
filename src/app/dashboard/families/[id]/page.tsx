@@ -22,6 +22,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useApproveBeneficiary, useBeneficiary, useRejectBeneficiary } from '@/hooks/use-beneficiaries';
 import { useAllAffectedEvents } from '@/hooks/use-affected-events';
 import { toast } from 'sonner';
+import { Beneficiary } from '@/models/beneficiary';
+import { Event } from '@/models/events';
 export default function FamilyProfile() {
   const router = useRouter()
   const params = useParams();
@@ -30,14 +32,14 @@ export default function FamilyProfile() {
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
   const approveBeneficiaryMutation = useApproveBeneficiary();
   const rejectBeneficiaryMutation = useRejectBeneficiary();
+  const [beneficiary, setBeneficiary] = useState<Beneficiary>();
 
-  const [beneficiary, setBeneficiary] = useState();
   useEffect(() => {
     if (beneficiariesData) {
       setBeneficiary(beneficiariesData.data.beneficiary);
     }
   }, [beneficiariesData]);
-  const [expandedList, setExpandedList] = useState('food');
+  const [expandedList, setExpandedList] = useState<string | null>('food');
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const foodItems = [
     { name: '30-Day Emergency Food Supply', url: 'amazon.com/item1', quantity: 1, price: 120.00 },
@@ -47,7 +49,9 @@ export default function FamilyProfile() {
     { name: 'Mylar Thermal Blankets (4-Pack)', url: 'amazon.com/item5', quantity: 1, price: 8.00 },
   ];
 
-  const toggleList = (listName) => {
+  type ListName = 'food' | 'medical' | 'school';
+
+  const toggleList = (listName: ListName): void => {
     setExpandedList(expandedList === listName ? null : listName);
   };
 
@@ -141,20 +145,20 @@ export default function FamilyProfile() {
               Recent Event
             </Label>
             {String(affectedEventsData?.data?.data?.find(
-              (event) => event.name === beneficiary?.affected_event
+              (event) => event.id === Number(beneficiary?.affected_event)
             )?.id)}
             <Select
               defaultValue={
                 affectedEventsData?.data?.data?.find(
-                  (event) => event.name === beneficiary?.affected_event
-                )?.id
+                  (event) => event.id === Number(beneficiary?.affected_event)
+                )?.id?.toString()
               }
             >
               <SelectTrigger className="bg-gray-10 w-full">
                 <SelectValue placeholder="Select an event" />
               </SelectTrigger>
               <SelectContent>
-                {affectedEventsData?.data?.data?.map((event) => {
+                {affectedEventsData?.data?.data?.map((event: Event) => {
                   return <SelectItem key={event.id} value={event.id.toString()}>
                     {event.name}
                   </SelectItem>

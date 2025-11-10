@@ -70,7 +70,7 @@ export default function AddItems() {
 
     try {
       const data = {
-        category_id: selectedCategory,
+        category_id: parseInt(selectedCategory),
         urls: validUrls,
       };
       console.log('Submitting data:', data);

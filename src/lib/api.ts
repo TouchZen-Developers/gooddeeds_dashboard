@@ -1,9 +1,10 @@
 import { loginResponse } from '@/models/login'
 import apiClient, { AxiosResponse } from './api-client'
 import { AxiosRequestConfig } from 'axios'
-import { Beneficiary, BeneficiaryResponse } from '@/models/beneficiary'
+import { Beneficiary, BeneficiariesResponse, BeneficiaryResponse, BeneficiariesStatisticsResponse } from '@/models/beneficiary'
 import { ProductsResponse } from '@/models/products'
 import { CategoriesResponse } from '@/models/category'
+import { EventsResponse } from '@/models/events'
 
 // Generic API utility functions
 export const api = {
@@ -59,15 +60,15 @@ export const authApi = {
 
 export const beneficiariesApi = {
   getBeneficiaries: async ({ status }: { status?: string }) => {
-    return api.get<BeneficiaryResponse>('/admin/beneficiaries', { params: { status } })
+    return api.get<BeneficiariesResponse>('/admin/beneficiaries', { params: { status } })
   },
 
   getBeneficiariesStatistics: async () => {
-    return api.get<BeneficiaryResponse>('/admin/beneficiaries/statistics')
+    return api.get<BeneficiariesStatisticsResponse>('/admin/beneficiaries/statistics')
   },
 
   getBeneficiary: async (id: number) => {
-    return api.get<Beneficiary>(`/admin/beneficiaries/${id}`)
+    return api.get<BeneficiaryResponse>(`/admin/beneficiaries/${id}`)
   },
 
   approveBeneficiary: async (id: number) => {
@@ -81,20 +82,20 @@ export const beneficiariesApi = {
 
 export const affectedEventsApi = {
   getAffectedEvents: async () => {
-    return api.get<BeneficiaryResponse>('/admin/affected-events')
+    return api.get<EventsResponse>('/admin/affected-events')
   },
   createAffectedEvent: async (event: FormData) => {
-    return api.post<BeneficiaryResponse>('/admin/affected-events', event, {
+    return api.post<BeneficiariesResponse>('/admin/affected-events', event, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   updateAffectedEvent: async (id: number, event: FormData) => {
-    return api.post<BeneficiaryResponse>(`/admin/affected-events/${id}`, event, {
+    return api.post<BeneficiariesResponse>(`/admin/affected-events/${id}`, event, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   deleteAffectedEvent: async (id: number) => {
-    return api.delete<BeneficiaryResponse>(`/admin/affected-events/${id}`)
+    return api.delete<BeneficiariesResponse>(`/admin/affected-events/${id}`)
   },
 }
 

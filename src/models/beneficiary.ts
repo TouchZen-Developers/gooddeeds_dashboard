@@ -1,8 +1,11 @@
-export interface BeneficiaryResponse {
+export interface BeneficiariesResponse {
   success: boolean
   data: Data
 }
-
+export interface BeneficiaryResponse {
+  success: boolean
+  data: { beneficiary: Beneficiary }
+}
 export interface Data {
   current_page: number
   data: Beneficiary[]
@@ -52,4 +55,17 @@ export interface Link {
   label: string
   page?: number
   active: boolean
+}
+
+
+export interface BeneficiariesStatisticsResponse {
+  success: boolean
+  data:  BeneficiariesStatistic
+}
+
+export interface  BeneficiariesStatistic {
+  total: number
+  pending: number
+  approved: number
+  rejected: number
 }
