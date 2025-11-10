@@ -17,7 +17,10 @@ const useCreateItem = () => {
   const queryClient = useQueryClient();
 
   const createItemMutation = useMutation({
-    mutationFn: (params: any) => {
+    mutationFn: (params: {
+      category_id: number,
+      urls: string[],
+    }) => {
       return amazonItemsApi.createBulkProducts(params);
     },
     onSuccess: () => {
@@ -28,18 +31,18 @@ const useCreateItem = () => {
   return createItemMutation;
 };
 
-const useUpdateCategory = () => {
+const useUpdateItem = () => {
   const queryClient = useQueryClient();
-  const updateCategoryMutation = useMutation({
-    mutationFn: (params: { id: number; category: FormData }) => {
-      const { id, category } = params;
-      return categoriesApi.updateCategory(id, category);
+  const updateItemMutation = useMutation({
+    mutationFn: (params: { id: number; item: FormData }) => {
+      const { id, item } = params;
+      return amazonItemsApi.updateProduct(id, item);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     }
   });
-  return updateCategoryMutation;
+  return updateItemMutation;
 };
 
 const useDeleteItem = () => {
@@ -58,7 +61,7 @@ const useDeleteItem = () => {
 export {
   useAllItems,
   useCreateItem,
-  // useUpdateCategory,
+  useUpdateItem,
   useDeleteItem
 };
 

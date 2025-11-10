@@ -17,25 +17,24 @@ export default function FamilyProfile() {
   const params = useParams();
   const id = parseInt(params.id);
   const icons = [
-    { icon: '/open-book 2.png', color: 'bg-red/10', id: 'heart' },
-    { icon: '/bowl-food-solid-full 1.png', color: 'bg-blue-1/10', id: 'sandwich' },
-    { icon: '/Group.png', color: 'bg-green-100 text-green-500', id: 'book' },
-    { icon: '/map-solid-full 1.png', color: 'bg-purple-100 text-purple-500', id: 'map' },
-    { icon: '/carrot-solid-full 1.png', color: 'bg-orange-100 text-orange-500', id: 'rocket' },
-    { icon: '/toolbox-solid-full 1.png', color: 'bg-blue-2/10 text-cyan-500', id: 'car' },
-    { icon: '/hand-solid-full 1.png', color: 'bg-[#F2994A]/10', id: 'smile' },
-    { icon: '/face-laugh-solid-full 1.png', color: 'bg-purple-1/10', id: 'plane' },
-    { icon: '/helicopter-solid-full 1.png', color: 'bg-yellow/10', id: 'hand' },
-    { icon: '/bandage-solid-full 1.png', color: 'bg-blue-3/10', id: 'wallet' },
-    { icon: '/computer-solid-full 1.png', color: 'bg-purple-2/10', id: 'briefcase' },
-    { icon: '/apple-whole-solid-full 1.png', color: 'bg-red/10', id: 'apple' }
+    { icon: '/open-book 2.png', id: 'heart' },
+    { icon: '/bowl-food-solid-full 1.png', id: 'sandwich' },
+    { icon: '/Group.png', id: 'book' },
+    { icon: '/map-solid-full 1.png', id: 'map' },
+    { icon: '/carrot-solid-full 1.png', id: 'rocket' },
+    { icon: '/toolbox-solid-full 1.png', id: 'car' },
+    { icon: '/hand-solid-full 1.png', id: 'smile' },
+    { icon: '/face-laugh-solid-full 1.png', id: 'plane' },
+    { icon: '/helicopter-solid-full 1.png', id: 'hand' },
+    { icon: '/bandage-solid-full 1.png', id: 'wallet' },
+    { icon: '/computer-solid-full 1.png', id: 'briefcase' },
+    { icon: '/apple-whole-solid-full 1.png', id: 'apple' }
   ];
   const { data: categoriesData, isLoading: isLoadingEvents } = useAllCategories();
   const deleteCategory = useDeleteCategory();
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
   const [category, setCategory] = useState({ name: '', id: 0, icon: '' });
-  console.log('category', category);
   useEffect(() => {
     if (categoriesData) {
       const categoryData = categoriesData?.data?.categories?.find((cat) => cat.id === parseInt(id as string));

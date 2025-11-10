@@ -81,8 +81,18 @@ export const affectedEventsApi = {
   getAffectedEvents: async () => {
     return api.get<BeneficiaryResponse>('/admin/affected-events')
   },
-  createAffectedEvent: async () => {
-    return api.post<BeneficiaryResponse>('/admin/affected-events')
+  createAffectedEvent: async (event: FormData) => {
+    return api.post<BeneficiaryResponse>('/admin/affected-events', event, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  updateAffectedEvent: async (id: number, event: FormData) => {
+    return api.post<BeneficiaryResponse>(`/admin/affected-events/${id}`, event, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  deleteAffectedEvent: async (id: number) => {
+    return api.delete<BeneficiaryResponse>(`/admin/affected-events/${id}`)
   },
 }
 
@@ -109,7 +119,10 @@ export const amazonItemsApi = {
   getProducts: async () => {
     return api.get('/admin/products')
   },
-  createBulkProducts: async (products: any) => {
+  createBulkProducts: async (products: {
+    category_id: number,
+    urls: string[],
+  }) => {
     return api.post('/admin/products/bulk-import', products)
   },
   updateProduct: async (id: number, product: FormData) => {

@@ -16,7 +16,7 @@ function fallbackTitle(pathname: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
-export function usePageTitle(customOverrides?: Record<string, string>) {
+export function usePageTitle() {
   const pathname = usePathname()
   const navItem = matchNavItem(pathname)
   

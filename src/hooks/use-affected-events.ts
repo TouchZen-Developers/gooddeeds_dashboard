@@ -14,7 +14,51 @@ const useAllAffectedEvents = () => {
   });
 };
 
+const useCreateAffectedEvent = () => {
+  const queryClient = useQueryClient();
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (event: FormData) => {
+      return affectedEventsApi.createAffectedEvent(event);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["affectedEvents"] });
+    }
+  });
+
+  return deleteCategoryMutation;
+};
+const useUpdateAffectedEvent = () => {
+  const queryClient = useQueryClient();
+  const deleteCategoryMutation = useMutation({
+    mutationFn: ({ id, event }: { id: number, event: FormData }) => {
+      return affectedEventsApi.updateAffectedEvent(id, event);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["affectedEvents"] });
+    }
+  });
+
+  return deleteCategoryMutation;
+};
+
+const useDeleteAffectedEvent = () => {
+  const queryClient = useQueryClient();
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: number) => {
+      return affectedEventsApi.deleteAffectedEvent(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["affectedEvents"] });
+    }
+  });
+
+  return deleteCategoryMutation;
+};
+
 export {
-  useAllAffectedEvents
+  useAllAffectedEvents,
+  useCreateAffectedEvent,
+  useUpdateAffectedEvent,
+  useDeleteAffectedEvent
 };
 

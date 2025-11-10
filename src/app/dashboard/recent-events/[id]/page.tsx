@@ -4,14 +4,6 @@ import { ChevronLeft, ShoppingBag, Utensils, GraduationCap, ChevronDown, Trash2I
 import Button from '@/components/Button/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -29,40 +21,27 @@ import {
   DropzoneTrigger,
   useDropzone,
 } from "@/components/ui/dropzone";
-import { useParams } from 'next/navigation';
-import { useAllBeneficiaries, useBeneficiary } from '@/hooks/use-beneficiaries';
-import { useAllAffectedEvents } from '@/hooks/use-affected-events';
+import { useParams, useRouter } from 'next/navigation';
+import { useAllAffectedEvents, useCreateAffectedEvent, useDeleteAffectedEvent, useUpdateAffectedEvent } from '@/hooks/use-affected-events';
 import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 export default function FamilyProfile() {
   const params = useParams();
+  const id = parseInt(params.id);
+  const router = useRouter();
   const [affectedEvent, setAffectedEvent] = useState({});
-  const { data: beneficiariesData, isLoading } = useAllBeneficiaries('');
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
-  const id = params.id;
-  const [beneficiary, setBeneficiary] = useState();
-
-  //  useEffect(() => {
-  //   if (affectedEventsData) {
-  //     setBeneficiary(beneficiariesData.data.beneficiary);
-  //   }
-  // }, [id, affectedEventsData]);
+  const createAffectedEvent = useCreateAffectedEvent();
+  const updateAffectedEvent = useUpdateAffectedEvent();
+  const deleteAffectedEventMutation = useDeleteAffectedEvent();
 
   useEffect(() => {
-    if (beneficiariesData) {
-      setBeneficiary(beneficiariesData.data.beneficiary);
+    if (affectedEventsData) {
+      setAffectedEvent(affectedEventsData.data.data.find((b) => b.id === id));
     }
-  }, [beneficiariesData]);
-  
-  const [expandedList, setExpandedList] = useState('food');
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
-  const foodItems = [
-    { name: '30-Day Emergency Food Supply', url: 'amazon.com/item1', quantity: 1, price: 120.00 },
-    { name: '299-Piece First Aid Kit', url: 'amazon.com/item2', quantity: 2, price: 18.00 },
-    { name: 'Emergency Weather Radio (Solar/Hand Crank)', url: 'amazon.com/item3', quantity: 1, price: 30.00 },
-    { name: 'Solar Power Bank (20000mAh)', url: 'amazon.com/item4', quantity: 3, price: 25.00 },
-    { name: 'Mylar Thermal Blankets (4-Pack)', url: 'amazon.com/item5', quantity: 1, price: 8.00 },
-  ];
+  }, [id, affectedEventsData]);
 
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
 
   const dropzone = useDropzone({
     onDropFile: async (file: File) => {
@@ -96,6 +75,69 @@ export default function FamilyProfile() {
     }
   }, [dropzone.fileStatuses]);
 
+  // Handle adding new record
+  const handleAddRecord = async () => {
+    const fd = new FormData();
+    fd.append('name', affectedEvent.name || '');
+    fd.append('is_featured', affectedEvent.is_featured || '');
+    const successFile = dropzone.fileStatuses.find(f => f.status === 'success');
+    if (successFile) {
+      fd.append('image', successFile.file, successFile.fileName);
+    }
+    if (affectedEvent.id) {
+      fd.append('id', affectedEvent.id)
+      fd.append('_method', 'PUT');
+    }
+
+    try {
+      if (affectedEvent.id) {
+        await updateAffectedEvent.mutateAsync({ id: affectedEvent.id, event: fd })
+        toast.success('Event updated')
+      } else {
+        await createAffectedEvent.mutateAsync(fd)
+        toast.success('Event added')
+      }
+      router.push('/dashboard/recent-events');
+
+    } catch (error) {
+      console.error('Add event error:', error)
+      throw error
+    }
+  }
+
+  // const handleEditRecord = async (record: z.infer<typeof schema> | FormData & { id?: number }) => {
+  //   console.log('Editing record:', record)
+  //   try {
+  //     if (record instanceof FormData) {
+  //       const idVal = editingRecord?.id;
+  //       if (typeof idVal === 'number') {
+  //         await updateCategory.mutateAsync({ id: idVal, params: record as unknown as CategoryItem })
+  //       }
+  //     } else {
+  //       const category: CategoryItem = {
+  //         "id": record.id,
+  //         "name": record.name,
+  //         "subtitle": record.subtitle,
+  //         "photo_url": record.photo_url,
+  //         "is_active": true,
+  //       }
+  //       await updateCategory.mutateAsync({ id: record.id, params: category })
+  //     }
+  //     toast.success('Category updated successfully')
+  //   } catch (error) {
+  //     console.error('Update category error:', error)
+  //     throw error
+  //   }
+  // }
+
+  const handleRemove = async () => {
+    // Implement removal logic here
+    await deleteAffectedEventMutation.mutate(id);
+    toast.success('Event removed successfully');
+    setShowRemoveDialog(false);
+    router.push('/dashboard/recent-events');
+  }
+
   return (
     <div className="">
       {/* Header */}
@@ -110,7 +152,7 @@ export default function FamilyProfile() {
             </clipPath>
           </defs>
         </svg>
-        <h1 className="text-3xl font-bold text-gray-100">Add New Event</h1>
+        <h1 className="text-3xl font-bold text-gray-100"> {affectedEvent?.id ? 'Edit Event' : 'Add New Event'}</h1>
       </div>
 
       {/* Family Profile Section */}
@@ -175,8 +217,8 @@ export default function FamilyProfile() {
               </DropzoneFileList>
             </Dropzone>
             <img
-              src={beneficiary?.family_photo_url}
-              alt="Family"
+              src={affectedEvent?.image_url}
+              alt="Event image"
               className="w-full h-64 object-cover rounded-lg"
             />
           </div>
@@ -185,10 +227,10 @@ export default function FamilyProfile() {
               <Label htmlFor="contactName" className="text-sm font-medium text-gray-700 mb-2 block">
                 Event Name
               </Label>
-              <Input id="contactName" defaultValue={beneficiary?.user?.first_name} className="bg-gray-10" />
+              <Input id="contactName" defaultValue={affectedEvent?.name} onChange={e => setAffectedEvent(prev => ({ ...prev, name: e.target.value }))} className="bg-gray-10" />
             </div>
             <div className="flex items-center gap-3">
-              <Checkbox id="terms" />
+              <Checkbox id="terms" checked={affectedEvent?.is_featured} onCheckedChange={(checked) => setAffectedEvent(prev => ({ ...prev, is_featured: checked }))} />
               <Label htmlFor="terms">Feature Event</Label>
             </div>
             {/* Action Buttons */}
@@ -197,41 +239,33 @@ export default function FamilyProfile() {
                 onClick={() => setShowRemoveDialog(true)}>
                 Remove
               </Button>
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                Update
+              <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={handleAddRecord}
+                loading={createAffectedEvent.isPending || updateAffectedEvent.isPending}
+              >
+                {affectedEvent?.id ? 'Update Event' : 'Add Event'}
               </Button>
             </div>
           </div>
         </div>
-
-
       </div>
-
-
       {/* Remove Confirmation Dialog */}
       <Dialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
         <DialogContent className="sm:max-w-sm">
           <div className="flex flex-col items-center text-center py-6">
-            <div className="mb-6">
-              <img
-                src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=200&h=200&fit=crop"
-                alt="Family"
-                className="w-24 h-24 rounded-full object-cover"
-              />
-            </div>
             <DialogTitle className="text-2xl font-semibold mb-2">
-              Remove Family
+              Are you sure?
             </DialogTitle>
             <DialogDescription className="text-gray-600 mb-6">
-              Are you sure you want to remove this family?
+              Are you sure you want to remove this event?
             </DialogDescription>
             <div className="flex gap-4 w-full">
               <Button
                 variant="outlined"
                 className="flex-1 text-orange-500 border-orange-500 hover:bg-orange-50"
-                onClick={() => setShowRemoveDialog(false)}
+                loading={deleteAffectedEventMutation.isPending}
+                onClick={handleRemove}
               >
-                Remove
+                Yes
               </Button>
               <Button
                 className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
@@ -243,8 +277,6 @@ export default function FamilyProfile() {
           </div>
         </DialogContent>
       </Dialog>
-
-
 
     </div>
   );

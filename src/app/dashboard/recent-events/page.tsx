@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import Image from "next/image"
 import Button from "@/components/Button/Button"
 import { Download, PlusCircle } from "lucide-react"
+import Link from "next/link"
 
 const schema = z.object({
   id: z.number(),
@@ -85,9 +86,11 @@ export default function Page() {
     <div className="flex flex-col ">
       <div className="flex justify-between items-center gap-5 mb-8" >
         <h1 className="text-3xl font-semibold mb-5">{title}</h1>
-        <Button variant="filled" size="lg" iconLeft={<PlusCircle />}>
-          Add New Event
-        </Button>
+        <Link href="/dashboard/recent-events/new">
+          <Button variant="filled" size="lg" iconLeft={<PlusCircle />}>
+            Add New Event
+          </Button>
+        </Link>
       </div>
       <div>
         <div className="tab-content bg-white rounded-lg !rounded-tl-none p-6 overflow-x-scroll">
