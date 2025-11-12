@@ -54,7 +54,7 @@ export default function Page() {
       header: () => "Category Icon",
       cell: ({ row }) => (
         <>
-          <Image src={row.original.icon_url || ''} width={48} height={48} alt="Category Icon" />
+         {row.original.icon_url && <Image src={row.original.icon_url} width={48} height={48} alt="Category Icon" />}
         </>
       ),
     },

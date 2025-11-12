@@ -191,3 +191,5 @@ export default function AddItems() {
     </div>
   );
 }
+
+export const runtime = 'edge';

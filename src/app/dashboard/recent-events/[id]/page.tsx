@@ -275,3 +275,5 @@ export default function FamilyProfile() {
     </div>
   );
 }
+
+export const runtime = 'edge';
