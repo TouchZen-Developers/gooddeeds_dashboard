@@ -32,7 +32,7 @@ const resetPasswordSchema = z.object({
 })
 const ForgotPasswordPage = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [showOtpPage, setShowOtpPage] = useState(false)
+  const [showOtpPage, setShowOtpPage] = useState(true)
   const [showResetPasswordPage, setShowResetPasswordPage] = useState(false)
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('');
@@ -115,7 +115,7 @@ const ForgotPasswordPage = () => {
     try {
       await authApi.forgotPassword(email)
       toast.success('OTP resent successfully!')
-      setOtp(['', '', '', ''])
+      setOtp('')
     } catch {
       toast.error('Failed to resend OTP')
     } finally {
@@ -208,13 +208,13 @@ const ForgotPasswordPage = () => {
                   value={otp}
                   onChange={setOtp}
                   numInputs={4}
-                  renderSeparator={<span>-</span>}
+                  renderSeparator={<span></span>}
                   renderInput={(props) => <input
                     {...props} />}
                   inputStyle={{
                     width: '3rem',
                     height: '3rem',
-                    margin: '20px 1rem',
+                    margin: '20px 0.5rem',
                     fontSize: '1rem',
                     borderRadius: 4,
                     border: '2px solid rgba(0,0,0,0.3)',
