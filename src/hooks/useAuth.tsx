@@ -24,6 +24,7 @@ const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setAuth({ user: null, token: null });
   };
 

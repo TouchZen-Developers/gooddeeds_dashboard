@@ -53,8 +53,16 @@ export const authApi = {
     return api.post('/forgot-password/send-otp', { email })
   },
 
-  resetPassword: async (token: string, password: string) => {
-    return api.post('/auth/reset-password', { token, password })
+  verifyOtp: async ({ email, otp }: { email: string; otp: string }) => {
+    return api.post('/forgot-password/verify-otp', { email, otp })
+  },
+
+  resetPassword: async ({ verification_token, password, password_confirmation }: { 
+    verification_token: string; 
+    password: string; 
+    password_confirmation: string 
+  }) => {
+    return api.post('/forgot-password/reset', { verification_token, password, password_confirmation })
   },
 }
 
