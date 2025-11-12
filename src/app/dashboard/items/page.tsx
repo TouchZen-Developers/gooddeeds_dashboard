@@ -19,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 const schema = z.object({
   id: z.number(),
   title: z.string(),
+  price: z.string(),
   product_count: z.number(),
   category: z.object({
     name: z.string(),

@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from 'react';
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -19,47 +17,29 @@ import {
 import Button from '@/components/Button/Button'
 
 import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/ui/password-input'
-
-import { loginFormSchema } from '@/lib/validation-schemas'
 import { authApi } from '@/lib/api'
-import { setToken } from '@/lib/jwt-utils'
-import Image from 'next/image';
-import { Label } from '@/components/ui/label';
 
-const formSchema = loginFormSchema
+const formSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+})
 const ForgotPasswordPage = () => {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: '',
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
     try {
-      // Use our API client for login
-      const response = await authApi.login({
-        email: values.email,
-        password: values.password
-      })
-
-      if (response?.token) {
-        setToken(response.token)
-        localStorage.setItem('user', JSON.stringify(response.user))
-        toast.success('Login successful!')
-        router.push('/dashboard')
-      } else {
-        toast.error('Login failed: No token received')
-      }
+      await authApi.forgotPassword(values.email)
+      toast.success('Password reset code sent! Check your email.')
+      form.reset()
     } catch (error) {
-      let errorMessage = 'Login failed. Please try again.'
+      let errorMessage = 'Failed to send reset code. Please try again.'
 
-      // Type guard to check if error has the expected structure
       if (error && typeof error === 'object' && 'response' in error) {
         const apiError = error as { response?: { data?: { message?: string } } }
         errorMessage = apiError.response?.data?.message || errorMessage

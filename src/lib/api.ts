@@ -50,7 +50,7 @@ export const authApi = {
   },
 
   forgotPassword: async (email: string) => {
-    return api.post('/auth/forgot-password', { email })
+    return api.post('/forgot-password/send-otp', { email })
   },
 
   resetPassword: async (token: string, password: string) => {

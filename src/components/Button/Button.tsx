@@ -14,7 +14,7 @@ const Button: React.FC<ButtonProps> = ({
     className = '',
     ...props
 }) => {
-    const handleClick = (e) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         if (disabled || loading) return;
         onClick?.(e);
     };

@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/dropzone";
 import { CloudUploadIcon, Trash2Icon } from 'lucide-react';
 import { toast } from "sonner"
-import { CategoryItem } from "@/models/category"
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from "./ui/textarea"
 

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { useAllCategories } from "@/hooks/use-categories"
-import { CategoryItem } from "@/models/category"
+import { Category } from "@/models/category"
 
 // Base schema that can be extended
 export const baseRecordSchema = z.object({
@@ -68,8 +68,8 @@ export function ProductModal({
 
   useEffect(() => {
     if (categoriesData && categoriesData.data) {
-      const formattedCategories = categoriesData.data.data.map((category: CategoryItem) => ({
-        value: category.id?.toString() || '',
+      const formattedCategories = categoriesData.data.categories.map((category: Category) => ({
+        value: category.id.toString(),
         label: category.name,
       }));
       setCategories(formattedCategories);

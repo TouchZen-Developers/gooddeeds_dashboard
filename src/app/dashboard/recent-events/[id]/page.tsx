@@ -25,11 +25,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAllAffectedEvents, useCreateAffectedEvent, useDeleteAffectedEvent, useUpdateAffectedEvent } from '@/hooks/use-affected-events';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { Event } from '@/models/events';
 export default function FamilyProfile() {
   const params = useParams();
   const id = parseInt(params.id as string);
   const router = useRouter();
-  const [affectedEvent, setAffectedEvent] = useState({});
+  const [affectedEvent, setAffectedEvent] = useState<Event>();
   const { data: affectedEventsData, isLoading: isLoadingEvents } = useAllAffectedEvents();
   const createAffectedEvent = useCreateAffectedEvent();
   const updateAffectedEvent = useUpdateAffectedEvent();
@@ -78,19 +79,19 @@ export default function FamilyProfile() {
   // Handle adding new record
   const handleAddRecord = async () => {
     const fd = new FormData();
-    fd.append('name', affectedEvent.name || '');
-    fd.append('is_featured', affectedEvent.is_featured || '');
+    fd.append('name', affectedEvent?.name || '');
+    fd.append('is_featured', affectedEvent?.is_featured ? 'true' : 'false');
     const successFile = dropzone.fileStatuses.find(f => f.status === 'success');
     if (successFile) {
       fd.append('image', successFile.file, successFile.fileName);
     }
-    if (affectedEvent.id) {
-      fd.append('id', affectedEvent.id)
+    if (affectedEvent?.id) {
+      fd.append('id', affectedEvent?.id.toString())
       fd.append('_method', 'PUT');
     }
 
     try {
-      if (affectedEvent.id) {
+      if (affectedEvent?.id) {
         await updateAffectedEvent.mutateAsync({ id: affectedEvent.id, event: fd })
         toast.success('Event updated')
       } else {
@@ -199,10 +200,31 @@ export default function FamilyProfile() {
               <Label htmlFor="contactName" className="text-sm font-medium text-gray-700 mb-2 block">
                 Event Name
               </Label>
-              <Input id="contactName" defaultValue={affectedEvent?.name} onChange={e => setAffectedEvent(prev => ({ ...prev, name: e.target.value }))} className="bg-gray-10" />
+              <Input
+                id="contactName"
+                defaultValue={affectedEvent?.name}
+                onChange={e =>
+                  setAffectedEvent(prev =>
+                    prev
+                      ? { ...prev, name: e.target.value }
+                      : prev
+                  )
+                }
+                className="bg-gray-10"
+              />
             </div>
             <div className="flex items-center gap-3">
-              <Checkbox id="terms" checked={affectedEvent?.is_featured} onCheckedChange={(checked) => setAffectedEvent(prev => ({ ...prev, is_featured: checked }))} />
+              <Checkbox
+                id="terms"
+                checked={affectedEvent?.is_featured}
+                onCheckedChange={checked =>
+                  setAffectedEvent(prev =>
+                    prev
+                      ? { ...prev, is_featured: checked as boolean }
+                      : prev
+                  )
+                }
+              />
               <Label htmlFor="terms">Feature Event</Label>
             </div>
             {/* Action Buttons */}
@@ -220,7 +242,7 @@ export default function FamilyProfile() {
           </div>
         </div>
       </div>
-      
+
       <Dialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
         <DialogContent className="sm:max-w-sm">
           <div className="flex flex-col items-center text-center py-6">
