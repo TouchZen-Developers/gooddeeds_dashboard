@@ -17,18 +17,18 @@ export default function FamilyProfile() {
   const params = useParams();
   const id = parseInt(params.id as string);
   const icons = [
-    { icon: '/open-book 2.png', id: 'heart' },
-    { icon: '/bowl-food-solid-full 1.png', id: 'sandwich' },
+    { icon: '/open-book.png', id: 'heart' },
+    { icon: '/bowl-food-solid-full.png', id: 'sandwich' },
     { icon: '/Group.png', id: 'book' },
-    { icon: '/map-solid-full 1.png', id: 'map' },
-    { icon: '/carrot-solid-full 1.png', id: 'rocket' },
-    { icon: '/toolbox-solid-full 1.png', id: 'car' },
-    { icon: '/hand-solid-full 1.png', id: 'smile' },
-    { icon: '/face-laugh-solid-full 1.png', id: 'plane' },
-    { icon: '/helicopter-solid-full 1.png', id: 'hand' },
-    { icon: '/bandage-solid-full 1.png', id: 'wallet' },
-    { icon: '/computer-solid-full 1.png', id: 'briefcase' },
-    { icon: '/apple-whole-solid-full 1.png', id: 'apple' }
+    { icon: '/map-solid-full.png', id: 'map' },
+    { icon: '/carrot-solid-full.png', id: 'rocket' },
+    { icon: '/toolbox-solid-full.png', id: 'car' },
+    { icon: '/hand-solid-full.png', id: 'smile' },
+    { icon: '/face-laugh-solid-full.png', id: 'plane' },
+    { icon: '/helicopter-solid-full.png', id: 'hand' },
+    { icon: '/bandage-solid-full.png', id: 'wallet' },
+    { icon: '/computer-solid-full.png', id: 'briefcase' },
+    { icon: '/apple-whole-solid-full.png', id: 'apple' }
   ];
   const { data: categoriesData, isLoading: isLoadingEvents } = useAllCategories();
   const deleteCategory = useDeleteCategory();

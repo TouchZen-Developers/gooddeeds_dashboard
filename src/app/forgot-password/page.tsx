@@ -32,7 +32,7 @@ const resetPasswordSchema = z.object({
 })
 const ForgotPasswordPage = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [showOtpPage, setShowOtpPage] = useState(true)
+  const [showOtpPage, setShowOtpPage] = useState(false)
   const [showResetPasswordPage, setShowResetPasswordPage] = useState(false)
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('');
